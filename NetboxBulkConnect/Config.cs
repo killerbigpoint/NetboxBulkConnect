@@ -18,6 +18,11 @@ namespace NetboxBulkConnect
         public bool UseHttpEncryption = true; //Default to true because we have standards
         public Metrics.Type MetricsType = Metrics.Type.Meters; //EU > NA
 
+        //Setting all of these can be tedious and takes time
+        public int numberOfPorts = 1;
+        public int cableType = 0;
+        public int cableLength = 20;
+
         public static Config GetConfig()
         {
             return ConfigInstance;

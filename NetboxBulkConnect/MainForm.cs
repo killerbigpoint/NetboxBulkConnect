@@ -30,23 +30,12 @@ namespace NetboxBulkConnect
         {
             Config.LoadConfig();
 
-            if (string.IsNullOrEmpty(Config.GetConfig().Server) == true)
-            {
-                MessageBox.Show("Server is missing", "Notice");
-                new SettingsForm(this).Show();
-                return;
-            }
-
-            if (string.IsNullOrEmpty(Config.GetConfig().ApiToken) == true)
-            {
-                MessageBox.Show("ApiToken is missing", "Notice");
-                new SettingsForm(this).Show();
-                return;
-            }
-
             RequestWrapper.InitializeWebClient();
             RefreshEverything();
+
             ChangeMetrics(Config.GetConfig().MetricsType);
+            textBox1.Text = Config.GetConfig().numberOfPorts.ToString();
+            textBox3.Text = Config.GetConfig().cableLength.ToString();
         }
 
         private void RefreshPort(Port.Type portType)
@@ -130,7 +119,19 @@ namespace NetboxBulkConnect
                 cablesTypes.Add(type);
                 comboBox3.Items.Add(type.display_name);
             }
-            comboBox3.SelectedIndex = 0;
+
+            int savedIndex = Config.GetConfig().cableType;
+            if (savedIndex > (comboBox3.Items.Count - 1))
+            {
+                comboBox3.SelectedIndex = 0;
+
+                Config.GetConfig().cableType = 0;
+                Config.SaveConfig();
+            }
+            else
+            {
+                comboBox3.SelectedIndex = savedIndex;
+            }
         }
 
         private void DisplayDeviceAPorts(int index)
@@ -159,6 +160,20 @@ namespace NetboxBulkConnect
 
         private void RefreshEverything()
         {
+            if (string.IsNullOrEmpty(Config.GetConfig().Server) == true)
+            {
+                MessageBox.Show("Server is missing", "Notice");
+                new SettingsForm(this).Show();
+                return;
+            }
+
+            if (string.IsNullOrEmpty(Config.GetConfig().ApiToken) == true)
+            {
+                MessageBox.Show("ApiToken is missing", "Notice");
+                new SettingsForm(this).Show();
+                return;
+            }
+
             RefreshCableTypes();
 
             devices.Clear();
@@ -219,6 +234,37 @@ namespace NetboxBulkConnect
         private void button5_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Coming soon", "Beta");
+        }
+
+        // ----- Cable Type ----- \\
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Config.GetConfig().cableType = comboBox3.SelectedIndex;
+            Config.SaveConfig();
+        }
+
+        // ----- Number Of Ports ----- \\
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (int.TryParse(textBox1.Text, out int ports) == false)
+            {
+                return;
+            }
+
+            Config.GetConfig().numberOfPorts = ports;
+            Config.SaveConfig();
+        }
+
+        // ----- Cable Length ----- \\
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            if (int.TryParse(textBox3.Text, out int ports) == false)
+            {
+                return;
+            }
+
+            Config.GetConfig().cableLength = ports;
+            Config.SaveConfig();
         }
 
         // ----- Connect Ports Button ----- \\
