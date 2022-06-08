@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.IO;
 using System;
 
-namespace NetboxBulkConnect
+namespace NetboxBulkConnect.Misc
 {
     public class Config
     {

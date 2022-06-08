@@ -1,4 +1,5 @@
 ﻿using NetboxBulkConnect.Models;
+using NetboxBulkConnect.Misc;
 using MetroFramework.Forms;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -174,15 +175,30 @@ namespace NetboxBulkConnect
                 return;
             }
 
-            RefreshCableTypes();
-
             devices.Clear();
             comboBox1.Items.Clear();
             comboBox2.Items.Clear();
 
+            ProgressForm progressBar = new ProgressForm();
+            progressBar.SetMaxProgress(100);
+            progressBar.Show();
+
+            progressBar.SetText("Loading Rearports");
             RefreshPort(Port.Type.Rearport);
+
+            progressBar.SetCurrentProgress(25);
+            progressBar.SetText("Loading Frontports");
             RefreshPort(Port.Type.Frontport);
+
+            progressBar.SetCurrentProgress(50);
+            progressBar.SetText("Loading Interfaces");
             RefreshPort(Port.Type.Interface);
+
+            progressBar.SetCurrentProgress(75);
+            progressBar.SetText("Loading Cable Types");
+            RefreshCableTypes();
+
+            progressBar.Dispose();
         }
 
         public void ChangeMetrics(Metrics.Type type)

@@ -3,7 +3,7 @@ using System.Text;
 using System.Net;
 using System.IO;
 
-namespace NetboxBulkConnect
+namespace NetboxBulkConnect.Misc
 {
     public class RequestWrapper
     {
