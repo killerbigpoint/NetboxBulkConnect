@@ -224,19 +224,15 @@ namespace NetboxBulkConnect
         // ----- Connect Ports Button ----- \\
         private void button2_Click(object sender, EventArgs e)
         {
-            StringBuilder output = new StringBuilder();
-
             if (int.TryParse(textBox1.Text, out int portCount) == false)
             {
-                output.AppendLine("Port count is not a whole number");
-                textBox2.Text = output.ToString();
+                MessageBox.Show("Port count is not a whole number", "Error");
                 return;
             }
 
             if (int.TryParse(textBox3.Text, out int cableLength) == false)
             {
-                output.AppendLine("Cable length is not a whole number");
-                textBox2.Text = output.ToString();
+                MessageBox.Show("Cable length is not a whole number", "Error");
                 return;
             }
 
@@ -245,8 +241,7 @@ namespace NetboxBulkConnect
 
             if (deviceA.Key == deviceB.Key)
             {
-                output.AppendLine("You can't connect the same device to itself");
-                textBox2.Text = output.ToString();
+                MessageBox.Show("You can't connect the same device to itself", "Error");
                 return;
             }
 
@@ -255,18 +250,17 @@ namespace NetboxBulkConnect
 
             if ((deviceAIndex + portCount) > deviceA.Value.ports.Count)
             {
-                output.AppendLine("Port count that you're trying to connect on Device A is going out of bounds");
-                textBox2.Text = output.ToString();
+                MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
                 return;
             }
 
             if ((deviceBIndex + portCount) > deviceB.Value.ports.Count)
             {
-                output.AppendLine("Port count that you're trying to connect on Device B is going out of bounds");
-                textBox2.Text = output.ToString();
+                MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
                 return;
             }
 
+            StringBuilder output = new StringBuilder();
             output.AppendLine($"Trying to connect {portCount} ports from {deviceA.Key} to {deviceB.Key}...");
 
             StringBuilder apiRequest = new StringBuilder();
