@@ -254,7 +254,7 @@
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(28, 13);
             this.label9.TabIndex = 23;
-            this.label9.Text = "v0.4";
+            this.label9.Text = "v0.7";
             // 
             // comboBox4
             // 
