@@ -37,6 +37,12 @@ namespace NetboxBulkConnect
             ChangeMetrics(Config.GetConfig().MetricsType);
             textBox1.Text = Config.GetConfig().numberOfPorts.ToString();
             textBox3.Text = Config.GetConfig().cableLength.ToString();
+
+            foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
+            {
+                comboBox4.Items.Add(type.ToString());
+            }
+            comboBox4.SelectedIndex = 0;
         }
 
         private void RefreshPort(Port.Type portType)
@@ -138,25 +144,45 @@ namespace NetboxBulkConnect
         private void DisplayDeviceAPorts(int index)
         {
             comboBox5.Items.Clear();
+            comboBox5.Text = string.Empty;
 
             var device = devices.ElementAt(index);
             foreach (var port in device.Value.ports)
             {
+                if (port.type != (Port.Type)comboBox4.SelectedIndex)
+                {
+                    continue;
+                }
+
                 comboBox5.Items.Add(port.name);
             }
-            comboBox5.SelectedIndex = 0;
+            
+            if (comboBox5.Items.Count > 0)
+            {
+                comboBox5.SelectedIndex = 0;
+            }
         }
 
         private void DisplayDeviceBPorts(int index)
         {
             comboBox6.Items.Clear();
+            comboBox6.Text = string.Empty;
 
             var device = devices.ElementAt(index);
             foreach (var port in device.Value.ports)
             {
+                if (port.type != (Port.Type)comboBox4.SelectedIndex)
+                {
+                    continue;
+                }
+
                 comboBox6.Items.Add(port.name);
             }
-            comboBox6.SelectedIndex = 0;
+
+            if (comboBox6.Items.Count > 0)
+            {
+                comboBox6.SelectedIndex = 0;
+            }
         }
 
         private void RefreshEverything()
@@ -343,6 +369,13 @@ namespace NetboxBulkConnect
                 Port deviceAPort = deviceA.Value.ports[deviceAIndex];
                 Port deviceBPort = deviceB.Value.ports[deviceBIndex];
 
+                if (deviceAPort.type != (Port.Type)comboBox4.SelectedIndex ||
+                    deviceBPort.type != (Port.Type)comboBox4.SelectedIndex)
+                {
+                    MessageBox.Show($"Port: {i} is not of type: {(Port.Type)comboBox4.SelectedIndex}", "Error");
+                    return;
+                }
+
                 deviceAPortsToRemove.Add(deviceAPort);
                 deviceBPortsToRemove.Add(deviceBPort);
 
@@ -378,6 +411,12 @@ namespace NetboxBulkConnect
 
             textBox2.Text = output.ToString();
 
+            DisplayDeviceAPorts(comboBox1.SelectedIndex);
+            DisplayDeviceBPorts(comboBox2.SelectedIndex);
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
             DisplayDeviceAPorts(comboBox1.SelectedIndex);
             DisplayDeviceBPorts(comboBox2.SelectedIndex);
         }
