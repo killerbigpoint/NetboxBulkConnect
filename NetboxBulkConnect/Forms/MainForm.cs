@@ -4,6 +4,7 @@ using MetroFramework.Forms;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Threading;
 using System.Linq;
 using System.Text;
 using System.Net;
@@ -32,8 +33,13 @@ namespace NetboxBulkConnect
             Config.LoadConfig();
 
             RequestWrapper.InitializeWebClient();
-            RefreshEverything();
 
+            LockUI();
+            RefreshEverything(OnFirstRefreshDone);
+        }
+
+        private void OnFirstRefreshDone()
+        {
             ChangeMetrics(Config.GetConfig().MetricsType);
             textBox1.Text = Config.GetConfig().numberOfPorts.ToString();
             textBox3.Text = Config.GetConfig().cableLength.ToString();
@@ -43,6 +49,46 @@ namespace NetboxBulkConnect
                 comboBox4.Items.Add(type.ToString());
             }
             comboBox4.SelectedIndex = 0;
+
+            UnlockUI();
+        }
+
+        private void LockUI()
+        {
+            comboBox1.Enabled = false;
+            comboBox2.Enabled = false;
+            comboBox3.Enabled = false;
+            comboBox4.Enabled = false;
+            comboBox5.Enabled = false;
+            comboBox6.Enabled = false;
+
+            textBox1.Enabled = false;
+            textBox3.Enabled = false;
+
+            button1.Enabled = false;
+            button2.Enabled = false;
+            button3.Enabled = false;
+            button4.Enabled = false;
+            button5.Enabled = false;
+        }
+
+        private void UnlockUI()
+        {
+            comboBox1.Enabled = true;
+            comboBox2.Enabled = true;
+            comboBox3.Enabled = true;
+            comboBox4.Enabled = true;
+            comboBox5.Enabled = true;
+            comboBox6.Enabled = true;
+
+            textBox1.Enabled = true;
+            textBox3.Enabled = true;
+
+            button1.Enabled = true;
+            button2.Enabled = true;
+            button3.Enabled = true;
+            button4.Enabled = true;
+            button5.Enabled = true;
         }
 
         private void RefreshPort(Port.Type portType)
@@ -83,8 +129,11 @@ namespace NetboxBulkConnect
                     {
                         if (devices.ContainsKey(deviceName) == false)
                         {   
-                            comboBox1.Items.Add(deviceName);
-                            comboBox2.Items.Add(deviceName);
+                            Invoke(new Action(() =>
+                            {
+                                comboBox1.Items.Add(deviceName);
+                                comboBox2.Items.Add(deviceName);
+                            }));
 
                             devices[deviceName] = new DeviceData()
                             {
@@ -98,8 +147,11 @@ namespace NetboxBulkConnect
                 }
             }
 
-            comboBox1.SelectedIndex = 0;
-            comboBox2.SelectedIndex = 0;
+            Invoke(new Action(() =>
+            {
+                comboBox1.SelectedIndex = 0;
+                comboBox2.SelectedIndex = 0;
+            }));
         }
 
         private void RefreshCableTypes()
@@ -119,26 +171,29 @@ namespace NetboxBulkConnect
             }
 
             cablesTypes.Clear();
-            comboBox3.Items.Clear();
-
-            foreach (CableTypeChoices type in response.actions.POST.type.choices)
+            Invoke(new Action(() =>
             {
-                cablesTypes.Add(type);
-                comboBox3.Items.Add(type.display_name);
-            }
+                comboBox3.Items.Clear();
 
-            int savedIndex = Config.GetConfig().cableType;
-            if (savedIndex > (comboBox3.Items.Count - 1))
-            {
-                comboBox3.SelectedIndex = 0;
+                foreach (CableTypeChoices type in response.actions.POST.type.choices)
+                {
+                    cablesTypes.Add(type);
+                    comboBox3.Items.Add(type.display_name);
+                }
 
-                Config.GetConfig().cableType = 0;
-                Config.SaveConfig();
-            }
-            else
-            {
-                comboBox3.SelectedIndex = savedIndex;
-            }
+                int savedIndex = Config.GetConfig().cableType;
+                if (savedIndex > (comboBox3.Items.Count - 1))
+                {
+                    comboBox3.SelectedIndex = 0;
+
+                    Config.GetConfig().cableType = 0;
+                    Config.SaveConfig();
+                }
+                else
+                {
+                    comboBox3.SelectedIndex = savedIndex;
+                }
+            }));
         }
 
         private void DisplayDeviceAPorts(int index)
@@ -185,7 +240,7 @@ namespace NetboxBulkConnect
             }
         }
 
-        private void RefreshEverything()
+        private void RefreshEverything(Action onComplete)
         {
             if (string.IsNullOrEmpty(Config.GetConfig().Server) == true)
             {
@@ -209,22 +264,53 @@ namespace NetboxBulkConnect
             progressBar.SetMaxProgress(100);
             progressBar.Show();
 
-            progressBar.SetText("Loading Rearports");
+            Thread fetchThread = new Thread(() =>
+            {
+                RefreshEverythingInternal(onComplete, progressBar);
+            });
+            fetchThread.Start();
+        }
+
+        private void RefreshEverythingInternal(Action onComplete, ProgressForm progressBar)
+        {
+            //Refresh Rearports
+            Invoke(new Action(() =>
+            {
+                progressBar.SetCurrentProgress(0);
+                progressBar.SetText("Loading Rearports");
+            }));
             RefreshPort(Port.Type.Rearport);
 
-            progressBar.SetCurrentProgress(25);
-            progressBar.SetText("Loading Frontports");
+            //Refresh Frontports
+            Invoke(new Action(() =>
+            {
+                progressBar.SetCurrentProgress(25);
+                progressBar.SetText("Loading Frontports");
+            }));
             RefreshPort(Port.Type.Frontport);
 
-            progressBar.SetCurrentProgress(50);
-            progressBar.SetText("Loading Interfaces");
+            //Refresh Interfaces
+            Invoke(new Action(() =>
+            {
+                progressBar.SetCurrentProgress(50);
+                progressBar.SetText("Loading Interfaces");
+            }));
             RefreshPort(Port.Type.Interface);
 
-            progressBar.SetCurrentProgress(75);
-            progressBar.SetText("Loading Cable Types");
+            //Refresh Cable Types
+            Invoke(new Action(() =>
+            {
+                progressBar.SetCurrentProgress(75);
+                progressBar.SetText("Loading Cable Types");
+            }));
             RefreshCableTypes();
 
-            progressBar.Dispose();
+            //Mark as complete
+            Invoke(new Action(() =>
+            {
+                progressBar.Dispose();
+                onComplete?.Invoke();
+            }));
         }
 
         public void ChangeMetrics(Metrics.Type type)
@@ -251,7 +337,8 @@ namespace NetboxBulkConnect
         // ----- Refresh Button ----- \\
         private void button4_Click(object sender, EventArgs e)
         {
-            RefreshEverything();
+            LockUI();
+            RefreshEverything(UnlockUI);
         }
 
         // ----- Print CSV Format ----- \\
