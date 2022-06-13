@@ -499,18 +499,6 @@ namespace NetboxBulkConnect
                 Port deviceAPort = portsOfTypeA[deviceAIndex];
                 Port deviceBPort = portsOfTypeB[deviceBIndex];
 
-                if (deviceAPort.type != deviceAPortType)
-                {
-                    MessageBox.Show($"Device A Port: {deviceAPort.name} ({i + 1}) is not of type: {deviceAPortType} ({deviceAPort.type})", "Error");
-                    return;
-                }
-
-                if (deviceBPort.type != deviceBPortType)
-                {
-                    MessageBox.Show($"Device B Port: {deviceBPort.name} ({i + 1}) is not of type: {deviceBPortType} ({deviceBPort.type})", "Error");
-                    return;
-                }
-
                 deviceAPortsToRemove.Add(deviceAPort);
                 deviceBPortsToRemove.Add(deviceBPort);
 
