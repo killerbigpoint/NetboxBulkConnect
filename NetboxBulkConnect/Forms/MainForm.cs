@@ -33,8 +33,6 @@ namespace NetboxBulkConnect
             Config.LoadConfig();
 
             RequestWrapper.InitializeWebClient();
-
-            LockUI();
             RefreshEverything(OnFirstRefreshDone);
         }
 
@@ -47,8 +45,10 @@ namespace NetboxBulkConnect
             foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
             {
                 comboBox4.Items.Add(type.ToString());
+                comboBox7.Items.Add(type.ToString());
             }
             comboBox4.SelectedIndex = 0;
+            comboBox7.SelectedIndex = 0;
 
             UnlockUI();
         }
@@ -61,6 +61,7 @@ namespace NetboxBulkConnect
             comboBox4.Enabled = false;
             comboBox5.Enabled = false;
             comboBox6.Enabled = false;
+            comboBox7.Enabled = false;
 
             textBox1.Enabled = false;
             textBox3.Enabled = false;
@@ -80,6 +81,7 @@ namespace NetboxBulkConnect
             comboBox4.Enabled = true;
             comboBox5.Enabled = true;
             comboBox6.Enabled = true;
+            comboBox7.Enabled = true;
 
             textBox1.Enabled = true;
             textBox3.Enabled = true;
@@ -91,15 +93,20 @@ namespace NetboxBulkConnect
             button5.Enabled = true;
         }
 
-        private void RefreshPort(Port.Type portType)
+        private void RefreshPort(Port.Type portType, ProgressForm progressBar)
         {
             string endpoint = $"dcim/{Port.TypeToEndpoint(portType)}/";
             while (string.IsNullOrEmpty(endpoint) == false)
             {
+                progressBar?.OutputText($"Sending request to: {endpoint}");
+
                 RequestWrapper.RequestResponse request = RequestWrapper.RetrieveRequest(endpoint, RequestWrapper.RetrieveType.GET);
                 if (request.statusCode != HttpStatusCode.OK)
                 {
-                    MessageBox.Show($"Server responded with error: {request.data}", "Error");
+                    string error = $"Server responded with error: {request.data}";
+
+                    MessageBox.Show(error, "Error");
+                    progressBar?.OutputText(error);
                     return;
                 }
 
@@ -117,6 +124,7 @@ namespace NetboxBulkConnect
                 if (response.results == null)
                 {
                     MessageBox.Show("Failed getting unconnected ports", "Error");
+                    progressBar?.OutputText("Failed getting unconnected ports");
                     return;
                 }
 
@@ -154,12 +162,18 @@ namespace NetboxBulkConnect
             }));
         }
 
-        private void RefreshCableTypes()
+        private void RefreshCableTypes(ProgressForm progressBar)
         {
-            RequestWrapper.RequestResponse request = RequestWrapper.RetrieveRequest("dcim/cables/?limit=0&?brief=1", RequestWrapper.RetrieveType.OPTIONS);
+            string endpoint = $"dcim/cables/?limit=0&?brief=1";
+            progressBar?.OutputText($"Sending request to: {endpoint}");
+
+            RequestWrapper.RequestResponse request = RequestWrapper.RetrieveRequest(endpoint, RequestWrapper.RetrieveType.OPTIONS);
             if (request.statusCode != HttpStatusCode.OK)
             {
-                MessageBox.Show($"Server responded with error: {request.data}", "Error");
+                string error = $"Server responded with error: {request.data}";
+
+                MessageBox.Show(error, "Error");
+                progressBar?.OutputText(error);
                 return;
             }
 
@@ -167,6 +181,7 @@ namespace NetboxBulkConnect
             if (response.actions == null)
             {
                 MessageBox.Show("Failed getting cable types", "Error");
+                progressBar?.OutputText("Failed getting cable types");
                 return;
             }
 
@@ -226,7 +241,7 @@ namespace NetboxBulkConnect
             var device = devices.ElementAt(index);
             foreach (var port in device.Value.ports)
             {
-                if (port.type != (Port.Type)comboBox4.SelectedIndex)
+                if (port.type != (Port.Type)comboBox7.SelectedIndex)
                 {
                     continue;
                 }
@@ -256,6 +271,8 @@ namespace NetboxBulkConnect
                 return;
             }
 
+            LockUI();
+
             devices.Clear();
             comboBox1.Items.Clear();
             comboBox2.Items.Clear();
@@ -279,7 +296,7 @@ namespace NetboxBulkConnect
                 progressBar.SetCurrentProgress(0);
                 progressBar.SetText("Loading Rearports");
             }));
-            RefreshPort(Port.Type.Rearport);
+            RefreshPort(Port.Type.Rearport, progressBar);
 
             //Refresh Frontports
             Invoke(new Action(() =>
@@ -287,7 +304,7 @@ namespace NetboxBulkConnect
                 progressBar.SetCurrentProgress(25);
                 progressBar.SetText("Loading Frontports");
             }));
-            RefreshPort(Port.Type.Frontport);
+            RefreshPort(Port.Type.Frontport, progressBar);
 
             //Refresh Interfaces
             Invoke(new Action(() =>
@@ -295,7 +312,7 @@ namespace NetboxBulkConnect
                 progressBar.SetCurrentProgress(50);
                 progressBar.SetText("Loading Interfaces");
             }));
-            RefreshPort(Port.Type.Interface);
+            RefreshPort(Port.Type.Interface, progressBar);
 
             //Refresh Cable Types
             Invoke(new Action(() =>
@@ -303,7 +320,7 @@ namespace NetboxBulkConnect
                 progressBar.SetCurrentProgress(75);
                 progressBar.SetText("Loading Cable Types");
             }));
-            RefreshCableTypes();
+            RefreshCableTypes(progressBar);
 
             //Mark as complete
             Invoke(new Action(() =>
@@ -423,13 +440,40 @@ namespace NetboxBulkConnect
             int deviceAIndex = comboBox5.SelectedIndex;
             int deviceBIndex = comboBox6.SelectedIndex;
 
-            if ((deviceAIndex + portCount) > deviceA.Value.ports.Count)
+            string metricsType = Metrics.TypeToApiType(Config.GetConfig().MetricsType);
+            Port.Type deviceAPortType = (Port.Type)comboBox4.SelectedIndex;
+            Port.Type deviceBPortType = (Port.Type)comboBox7.SelectedIndex;
+
+            List<Port> portsOfTypeA = new List<Port>();
+            List<Port> portsOfTypeB = new List<Port>();
+
+            foreach (Port port in deviceA.Value.ports)
+            {
+                if (port.type != deviceAPortType)
+                {
+                    continue;
+                }
+
+                portsOfTypeA.Add(port);
+            }
+
+            foreach (Port port in deviceB.Value.ports)
+            {
+                if (port.type != deviceBPortType)
+                {
+                    continue;
+                }
+
+                portsOfTypeB.Add(port);
+            }
+
+            if ((deviceAIndex + portCount) > portsOfTypeA.Count)
             {
                 MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
                 return;
             }
 
-            if ((deviceBIndex + portCount) > deviceB.Value.ports.Count)
+            if ((deviceBIndex + portCount) > portsOfTypeB.Count)
             {
                 MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
                 return;
@@ -444,8 +488,7 @@ namespace NetboxBulkConnect
             List<Port> deviceAPortsToRemove = new List<Port>();
             List<Port> deviceBPortsToRemove = new List<Port>();
 
-            string metricsType = Metrics.TypeToApiType(Config.GetConfig().MetricsType);
-
+            //Start building API Request
             for (int i = 0; i < portCount; i++)
             {
                 if (i > 0)
@@ -453,13 +496,18 @@ namespace NetboxBulkConnect
                     apiRequest.Append(",");
                 }
 
-                Port deviceAPort = deviceA.Value.ports[deviceAIndex];
-                Port deviceBPort = deviceB.Value.ports[deviceBIndex];
+                Port deviceAPort = portsOfTypeA[deviceAIndex];
+                Port deviceBPort = portsOfTypeB[deviceBIndex];
 
-                if (deviceAPort.type != (Port.Type)comboBox4.SelectedIndex ||
-                    deviceBPort.type != (Port.Type)comboBox4.SelectedIndex)
+                if (deviceAPort.type != deviceAPortType)
                 {
-                    MessageBox.Show($"Port: {i} is not of type: {(Port.Type)comboBox4.SelectedIndex}", "Error");
+                    MessageBox.Show($"Device A Port: {deviceAPort.name} ({i + 1}) is not of type: {deviceAPortType} ({deviceAPort.type})", "Error");
+                    return;
+                }
+
+                if (deviceBPort.type != deviceBPortType)
+                {
+                    MessageBox.Show($"Device B Port: {deviceBPort.name} ({i + 1}) is not of type: {deviceBPortType} ({deviceBPort.type})", "Error");
                     return;
                 }
 
@@ -467,7 +515,7 @@ namespace NetboxBulkConnect
                 deviceBPortsToRemove.Add(deviceBPort);
 
                 apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cablesTypes[comboBox3.SelectedIndex].value.ToString() + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
-                output.AppendLine($"{deviceA.Key}:{deviceAPort.name} -> {deviceB.Key}:{deviceBPort.name}");
+                output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}");
 
                 deviceAIndex++;
                 deviceBIndex++;
@@ -505,6 +553,10 @@ namespace NetboxBulkConnect
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
             DisplayDeviceAPorts(comboBox1.SelectedIndex);
+        }
+
+        private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)
+        {
             DisplayDeviceBPorts(comboBox2.SelectedIndex);
         }
     }

@@ -32,5 +32,13 @@ namespace NetboxBulkConnect
         {
             progressBar1.Value = currentProgress;
         }
+
+        public void OutputText(string text)
+        {
+            Invoke(new Action(() =>
+            {
+                textBox1.AppendText(text);
+            }));
+        }
     }
 }
