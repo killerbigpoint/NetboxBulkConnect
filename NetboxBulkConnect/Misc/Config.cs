@@ -23,6 +23,9 @@ namespace NetboxBulkConnect.Misc
         public int CableType = 0;
         public int CableLength = 20;
 
+        public int DeviceAPortSkips = 0;
+        public int DeviceBPortSkips = 0;
+
         public static Config GetConfig()
         {
             return ConfigInstance;

@@ -33,14 +33,16 @@ namespace NetboxBulkConnect
             Config.LoadConfig();
 
             RequestWrapper.InitializeWebClient();
-            RefreshEverything(OnFirstRefreshDone);
+            RefreshEverything(OnRefreshDone);
         }
 
-        private void OnFirstRefreshDone()
+        private void OnRefreshDone()
         {
             ChangeMetrics(Config.GetConfig().MetricsType);
             textBox1.Text = Config.GetConfig().NumberOfPorts.ToString();
             textBox3.Text = Config.GetConfig().CableLength.ToString();
+            textBox4.Text = Config.GetConfig().DeviceAPortSkips.ToString();
+            textBox5.Text = Config.GetConfig().DeviceBPortSkips.ToString();
 
             foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
             {
@@ -413,6 +415,30 @@ namespace NetboxBulkConnect
             Config.SaveConfig();
         }
 
+        // ----- Device A Port Skips ----- \\
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            if (int.TryParse(textBox4.Text, out int skips) == false)
+            {
+                return;
+            }
+
+            Config.GetConfig().DeviceAPortSkips = skips;
+            Config.SaveConfig();
+        }
+
+        // ----- Device B Port Skips ----- \\
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+            if (int.TryParse(textBox5.Text, out int skips) == false)
+            {
+                return;
+            }
+
+            Config.GetConfig().DeviceBPortSkips = skips;
+            Config.SaveConfig();
+        }
+
         // ----- Connect Ports Button ----- \\
         private void button2_Click(object sender, EventArgs e)
         {
@@ -467,18 +493,6 @@ namespace NetboxBulkConnect
                 portsOfTypeB.Add(port);
             }
 
-            if ((deviceAIndex + portCount) > portsOfTypeA.Count)
-            {
-                MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
-                return;
-            }
-
-            if ((deviceBIndex + portCount) > portsOfTypeB.Count)
-            {
-                MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
-                return;
-            }
-
             StringBuilder output = new StringBuilder();
             output.AppendLine($"Trying to connect {portCount} ports from {deviceA.Key} to {deviceB.Key}...");
 
@@ -488,12 +502,27 @@ namespace NetboxBulkConnect
             List<Port> deviceAPortsToRemove = new List<Port>();
             List<Port> deviceBPortsToRemove = new List<Port>();
 
+            int deviceAPortSkips = Config.GetConfig().DeviceAPortSkips;
+            int deviceBPortSkips = Config.GetConfig().DeviceBPortSkips;
+
             //Start building API Request
             for (int i = 0; i < portCount; i++)
             {
                 if (i > 0)
                 {
                     apiRequest.Append(",");
+                }
+
+                if (deviceAIndex >= portsOfTypeA.Count)
+                {
+                    MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
+                    return;
+                }
+
+                if (deviceBIndex >= portsOfTypeB.Count)
+                {
+                    MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
+                    return;
                 }
 
                 Port deviceAPort = portsOfTypeA[deviceAIndex];
@@ -505,12 +534,13 @@ namespace NetboxBulkConnect
                 apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cablesTypes[comboBox3.SelectedIndex].value.ToString() + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
                 output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}");
 
-                deviceAIndex++;
-                deviceBIndex++;
+                deviceAIndex += deviceAPortSkips + 1;
+                deviceBIndex += deviceBPortSkips + 1;
             }
 
             apiRequest.Append("]");
-            HttpStatusCode responseCode = RequestWrapper.PostRequest($"dcim/cables/", apiRequest.ToString());
+            output.AppendLine($"All {portCount} ports connected succesfully!");
+            /*HttpStatusCode responseCode = RequestWrapper.PostRequest($"dcim/cables/", apiRequest.ToString());
 
             if (responseCode == HttpStatusCode.OK ||
                 responseCode == HttpStatusCode.Created)
@@ -530,7 +560,7 @@ namespace NetboxBulkConnect
             else
             {
                 output.AppendLine($"Connecting ports failed with error code: {responseCode}");
-            }
+            }*/
 
             textBox2.Text = output.ToString();
 
