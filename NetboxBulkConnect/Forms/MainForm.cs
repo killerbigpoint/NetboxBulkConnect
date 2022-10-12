@@ -539,8 +539,7 @@ namespace NetboxBulkConnect
             }
 
             apiRequest.Append("]");
-            output.AppendLine($"All {portCount} ports connected succesfully!");
-            /*HttpStatusCode responseCode = RequestWrapper.PostRequest($"dcim/cables/", apiRequest.ToString());
+            HttpStatusCode responseCode = RequestWrapper.PostRequest($"dcim/cables/", apiRequest.ToString());
 
             if (responseCode == HttpStatusCode.OK ||
                 responseCode == HttpStatusCode.Created)
@@ -560,10 +559,9 @@ namespace NetboxBulkConnect
             else
             {
                 output.AppendLine($"Connecting ports failed with error code: {responseCode}");
-            }*/
+            }
 
             textBox2.Text = output.ToString();
-
             DisplayDeviceAPorts(comboBox1.SelectedIndex);
             DisplayDeviceBPorts(comboBox2.SelectedIndex);
         }
