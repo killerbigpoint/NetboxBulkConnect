@@ -39,8 +39,8 @@ namespace NetboxBulkConnect
         private void OnFirstRefreshDone()
         {
             ChangeMetrics(Config.GetConfig().MetricsType);
-            textBox1.Text = Config.GetConfig().numberOfPorts.ToString();
-            textBox3.Text = Config.GetConfig().cableLength.ToString();
+            textBox1.Text = Config.GetConfig().NumberOfPorts.ToString();
+            textBox3.Text = Config.GetConfig().CableLength.ToString();
 
             foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
             {
@@ -196,12 +196,12 @@ namespace NetboxBulkConnect
                     comboBox3.Items.Add(type.display_name);
                 }
 
-                int savedIndex = Config.GetConfig().cableType;
+                int savedIndex = Config.GetConfig().CableType;
                 if (savedIndex > (comboBox3.Items.Count - 1))
                 {
                     comboBox3.SelectedIndex = 0;
 
-                    Config.GetConfig().cableType = 0;
+                    Config.GetConfig().CableType = 0;
                     Config.SaveConfig();
                 }
                 else
@@ -385,7 +385,7 @@ namespace NetboxBulkConnect
         // ----- Cable Type ----- \\
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Config.GetConfig().cableType = comboBox3.SelectedIndex;
+            Config.GetConfig().CableType = comboBox3.SelectedIndex;
             Config.SaveConfig();
         }
 
@@ -397,7 +397,7 @@ namespace NetboxBulkConnect
                 return;
             }
 
-            Config.GetConfig().numberOfPorts = ports;
+            Config.GetConfig().NumberOfPorts = ports;
             Config.SaveConfig();
         }
 
@@ -409,7 +409,7 @@ namespace NetboxBulkConnect
                 return;
             }
 
-            Config.GetConfig().cableLength = ports;
+            Config.GetConfig().CableLength = ports;
             Config.SaveConfig();
         }
 

@@ -19,9 +19,9 @@ namespace NetboxBulkConnect.Misc
         public Metrics.Type MetricsType = Metrics.Type.Meters; //EU > NA
 
         //Setting all of these can be tedious and takes time
-        public int numberOfPorts = 1;
-        public int cableType = 0;
-        public int cableLength = 20;
+        public int NumberOfPorts = 1;
+        public int CableType = 0;
+        public int CableLength = 20;
 
         public static Config GetConfig()
         {
