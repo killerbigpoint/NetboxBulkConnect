@@ -10,7 +10,7 @@
 			Inches = 3
 		}
 
-		public static string TypeToApiType(Type type)
+		public static string TypeToApi(Type type)
 		{
 			switch (type)
 			{

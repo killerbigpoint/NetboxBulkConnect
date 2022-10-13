@@ -552,7 +552,8 @@ namespace NetboxBulkConnect
             int deviceAIndex = comboBox5.SelectedIndex;
             int deviceBIndex = comboBox6.SelectedIndex;
 
-            string metricsType = Metrics.TypeToApiType(Config.GetConfig().MetricsType);
+            string cableType = cablesTypes[comboBox3.SelectedIndex].value;
+            string metricsType = Metrics.TypeToApi(Config.GetConfig().MetricsType);
             Port.Type deviceAPortType = (Port.Type)comboBox4.SelectedIndex;
             Port.Type deviceBPortType = (Port.Type)comboBox7.SelectedIndex;
 
@@ -617,7 +618,7 @@ namespace NetboxBulkConnect
                 deviceAPortsToRemove.Add(deviceAPort);
                 deviceBPortsToRemove.Add(deviceBPort);
 
-                apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cablesTypes[comboBox3.SelectedIndex].value.ToString() + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
+                apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cableType + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
                 output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}");
 
                 deviceAIndex += deviceAPortSkips + 1;
