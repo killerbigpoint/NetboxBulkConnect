@@ -38,19 +38,22 @@ namespace NetboxBulkConnect
 
         private void OnRefreshDone(bool success)
         {
-            ChangeMetrics(Config.GetConfig().MetricsType);
-            textBox1.Text = Config.GetConfig().NumberOfPorts.ToString();
-            textBox3.Text = Config.GetConfig().CableLength.ToString();
-            textBox4.Text = Config.GetConfig().DeviceAPortSkips.ToString();
-            textBox5.Text = Config.GetConfig().DeviceBPortSkips.ToString();
-
-            foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
+            if (success == true)
             {
-                comboBox4.Items.Add(type.ToString());
-                comboBox7.Items.Add(type.ToString());
+                ChangeMetrics(Config.GetConfig().MetricsType);
+                textBox1.Text = Config.GetConfig().NumberOfPorts.ToString();
+                textBox3.Text = Config.GetConfig().CableLength.ToString();
+                textBox4.Text = Config.GetConfig().DeviceAPortSkips.ToString();
+                textBox5.Text = Config.GetConfig().DeviceBPortSkips.ToString();
+
+                foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
+                {
+                    comboBox4.Items.Add(type.ToString());
+                    comboBox7.Items.Add(type.ToString());
+                }
+                comboBox4.SelectedIndex = 0;
+                comboBox7.SelectedIndex = 0;
             }
-            comboBox4.SelectedIndex = 0;
-            comboBox7.SelectedIndex = 0;
 
             UnlockUI(success);
         }
