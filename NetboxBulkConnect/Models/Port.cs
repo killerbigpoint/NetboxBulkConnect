@@ -25,14 +25,19 @@
 			return GetApiName(type);
         }
 
-		public static string TypeToEndpoint(Type type)
+        public string GetCSVName()
+        {
+            return GetCSVName(type);
+        }
+
+        public static string TypeToEndpoint(Type type)
         {
 			switch (type)
             {
 				case Type.Rearport: return "rear-ports";
 				case Type.Frontport: return "front-ports";
 				case Type.Interface: return "interfaces";
-				default: return string.Empty;
+				default: return "unknown";
             }
         }
 
@@ -43,8 +48,19 @@
 				case Type.Rearport: return "dcim.rearport";
 				case Type.Frontport: return "dcim.frontport";
 				case Type.Interface: return "dcim.interface";
-				default: return string.Empty;
+				default: return "dcim.unknown";
 			}
 		}
-	}
+
+        public static string GetCSVName(Type type)
+        {
+            switch (type)
+            {
+                case Type.Rearport: return "rearport";
+                case Type.Frontport: return "frontport";
+                case Type.Interface: return "interface";
+                default: return "unknown";
+            }
+        }
+    }
 }

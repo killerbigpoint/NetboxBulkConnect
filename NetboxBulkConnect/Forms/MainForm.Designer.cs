@@ -47,7 +47,6 @@
             this.comboBox6 = new System.Windows.Forms.ComboBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
@@ -163,7 +162,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(740, 214);
+            this.button1.Location = new System.Drawing.Point(891, 214);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(144, 28);
@@ -174,7 +173,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(565, 33);
+            this.button2.Location = new System.Drawing.Point(739, 214);
             this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(144, 28);
@@ -185,7 +184,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(413, 33);
+            this.button4.Location = new System.Drawing.Point(740, 33);
             this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(144, 28);
@@ -252,17 +251,6 @@
             this.button3.Text = "Settings";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(892, 214);
-            this.button5.Margin = new System.Windows.Forms.Padding(4);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(144, 28);
-            this.button5.TabIndex = 21;
-            this.button5.Text = "Import CSV Format";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // label8
             // 
@@ -379,7 +367,6 @@
             this.Controls.Add(this.comboBox4);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
-            this.Controls.Add(this.button5);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.comboBox6);
@@ -432,7 +419,6 @@
         private System.Windows.Forms.ComboBox comboBox6;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox4;

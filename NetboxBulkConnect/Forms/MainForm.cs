@@ -72,7 +72,6 @@ namespace NetboxBulkConnect
             button2.Enabled = false;
             button3.Enabled = false;
             button4.Enabled = false;
-            button5.Enabled = false;
         }
 
         private void UnlockUI()
@@ -92,7 +91,6 @@ namespace NetboxBulkConnect
             button2.Enabled = true;
             button3.Enabled = true;
             button4.Enabled = true;
-            button5.Enabled = true;
         }
 
         private void RefreshPort(Port.Type portType, ProgressForm progressBar)
@@ -363,7 +361,95 @@ namespace NetboxBulkConnect
         // ----- Print CSV Format ----- \\
         private void button1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Coming soon", "Beta");
+            if (int.TryParse(textBox1.Text, out int portCount) == false)
+            {
+                MessageBox.Show("Port count is not a whole number", "Error");
+                return;
+            }
+
+            if (int.TryParse(textBox3.Text, out int cableLength) == false)
+            {
+                MessageBox.Show("Cable length is not a whole number", "Error");
+                return;
+            }
+
+            var deviceA = devices.ElementAt(comboBox1.SelectedIndex);
+            var deviceB = devices.ElementAt(comboBox2.SelectedIndex);
+
+            if (deviceA.Key == deviceB.Key)
+            {
+                MessageBox.Show("You can't connect the same device to itself", "Error");
+                return;
+            }
+
+            int deviceAIndex = comboBox5.SelectedIndex;
+            int deviceBIndex = comboBox6.SelectedIndex;
+
+            string cableType = cablesTypes[comboBox3.SelectedIndex].display_name;
+            string metricsType = Metrics.TypeToCSV(Config.GetConfig().MetricsType);
+            Port.Type deviceAPortType = (Port.Type)comboBox4.SelectedIndex;
+            Port.Type deviceBPortType = (Port.Type)comboBox7.SelectedIndex;
+
+            List<Port> portsOfTypeA = new List<Port>();
+            List<Port> portsOfTypeB = new List<Port>();
+
+            foreach (Port port in deviceA.Value.ports)
+            {
+                if (port.type != deviceAPortType)
+                {
+                    continue;
+                }
+
+                portsOfTypeA.Add(port);
+            }
+
+            foreach (Port port in deviceB.Value.ports)
+            {
+                if (port.type != deviceBPortType)
+                {
+                    continue;
+                }
+
+                portsOfTypeB.Add(port);
+            }
+
+            StringBuilder output = new StringBuilder();
+            output.AppendLine("side_a_device,side_a_type,side_a_name,side_b_device,side_b_type,side_b_name,type,length,length_unit");
+
+            List<Port> deviceAPortsToRemove = new List<Port>();
+            List<Port> deviceBPortsToRemove = new List<Port>();
+
+            int deviceAPortSkips = Config.GetConfig().DeviceAPortSkips;
+            int deviceBPortSkips = Config.GetConfig().DeviceBPortSkips;
+
+            //Start building API Request
+            for (int i = 0; i < portCount; i++)
+            {
+                if (deviceAIndex >= portsOfTypeA.Count)
+                {
+                    MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
+                    return;
+                }
+
+                if (deviceBIndex >= portsOfTypeB.Count)
+                {
+                    MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
+                    return;
+                }
+
+                Port deviceAPort = portsOfTypeA[deviceAIndex];
+                Port deviceBPort = portsOfTypeB[deviceBIndex];
+
+                deviceAPortsToRemove.Add(deviceAPort);
+                deviceBPortsToRemove.Add(deviceBPort);
+
+                output.AppendLine($"{deviceA.Key},{deviceAPort.GetCSVName()},{deviceAPort.name},{deviceB.Key},{deviceBPort.GetCSVName()},{deviceBPort.name},{cableType},{cableLength},{metricsType}");
+
+                deviceAIndex += deviceAPortSkips + 1;
+                deviceBIndex += deviceBPortSkips + 1;
+            }
+
+            textBox2.Text = output.ToString();
         }
 
         // ----- Settings Button ----- \\
@@ -532,7 +618,7 @@ namespace NetboxBulkConnect
                 deviceBPortsToRemove.Add(deviceBPort);
 
                 apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cablesTypes[comboBox3.SelectedIndex].value.ToString() + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
-                output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}\r\n");
+                output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}");
 
                 deviceAIndex += deviceAPortSkips + 1;
                 deviceBIndex += deviceBPortSkips + 1;

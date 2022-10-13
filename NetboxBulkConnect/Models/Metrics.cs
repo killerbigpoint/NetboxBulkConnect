@@ -21,5 +21,17 @@
 				default: return string.Empty;
 			}
 		}
-	}
+
+        public static string TypeToCSV(Type type)
+        {
+            switch (type)
+            {
+                case Type.Meters: return "Meters";
+                case Type.CM: return "Centimeters";
+                case Type.Feet: return "Feet";
+                case Type.Inches: return "Inches";
+                default: return string.Empty;
+            }
+        }
+    }
 }
