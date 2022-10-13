@@ -36,6 +36,8 @@ namespace NetboxBulkConnect.Misc
             {
                 return true;
             });
+
+            FileLogging.Append("HTTP Initialized");
         }
 
         public static RequestResponse RetrieveRequest(string endpoint, RetrieveType type)

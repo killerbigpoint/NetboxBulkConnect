@@ -42,10 +42,14 @@ namespace NetboxBulkConnect.Misc
             try
             {
                 ConfigInstance = JsonConvert.DeserializeObject<Config>(File.ReadAllText(ConfigLocation));
+                FileLogging.Append("Config loaded");
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Config file couldn't be loaded: {e.Message}", "Config");
+                string error = $"Config file couldn't be loaded: {e.Message}";
+
+                MessageBox.Show(error, "Config");
+                FileLogging.Append(error);
             }
         }
 
@@ -57,7 +61,10 @@ namespace NetboxBulkConnect.Misc
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Config file couldn't be saved: {e.Message}", "Config");
+                string error = $"Config file couldn't be saved: {e.Message}";
+
+                MessageBox.Show(error, "Config");
+                FileLogging.Append(error);
             }
         }
     }

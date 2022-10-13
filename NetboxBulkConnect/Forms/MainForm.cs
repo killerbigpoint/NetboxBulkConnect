@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System;
+using System.Diagnostics;
 
 namespace NetboxBulkConnect
 {
@@ -30,6 +31,7 @@ namespace NetboxBulkConnect
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            FileLogging.Initialize();
             Config.LoadConfig();
 
             RequestWrapper.InitializeWebClient();
@@ -77,6 +79,8 @@ namespace NetboxBulkConnect
             button2.Enabled = false;
             button3.Enabled = false;
             button4.Enabled = false;
+
+            FileLogging.Append("Locked UI");
         }
 
         private void UnlockUI(bool success)
@@ -98,6 +102,8 @@ namespace NetboxBulkConnect
             button2.Enabled = true;
             button3.Enabled = true;
             button4.Enabled = true;
+
+            FileLogging.Append("Unlocked UI");
         }
 
         private void RefreshPort(Port.Type portType, ProgressForm progressBar)
@@ -105,7 +111,9 @@ namespace NetboxBulkConnect
             string endpoint = $"dcim/{Port.TypeToEndpoint(portType)}/";
             while (string.IsNullOrEmpty(endpoint) == false)
             {
-                progressBar?.OutputText($"Sending request to: {endpoint}");
+                string progress = $"Sending request to: {endpoint}";
+                progressBar?.OutputText(progress);
+                FileLogging.Append(progress);
 
                 RequestWrapper.RequestResponse request = RequestWrapper.RetrieveRequest(endpoint, RequestWrapper.RetrieveType.GET);
                 if (request.statusCode != HttpStatusCode.OK)
@@ -114,6 +122,7 @@ namespace NetboxBulkConnect
 
                     MessageBox.Show(error, "Error");
                     progressBar?.OutputText(error);
+                    FileLogging.Append(error);
 
                     return;
                 }
@@ -132,8 +141,9 @@ namespace NetboxBulkConnect
                 if (response.results == null)
                 {
                     MessageBox.Show("Failed getting unconnected ports", "Error");
-
                     progressBar?.OutputText("Failed getting unconnected ports");
+                    FileLogging.Append("Failed getting unconnected ports");
+
                     return;
                 }
 
@@ -176,7 +186,10 @@ namespace NetboxBulkConnect
         private void RefreshCableTypes(ProgressForm progressBar)
         {
             string endpoint = $"dcim/cables/?limit=0&?brief=1";
-            progressBar?.OutputText($"Sending request to: {endpoint}");
+
+            string progress = $"Sending request to: {endpoint}";
+            progressBar?.OutputText(progress);
+            FileLogging.Append(progress);
 
             RequestWrapper.RequestResponse request = RequestWrapper.RetrieveRequest(endpoint, RequestWrapper.RetrieveType.OPTIONS);
             if (request.statusCode != HttpStatusCode.OK)
@@ -185,6 +198,8 @@ namespace NetboxBulkConnect
 
                 MessageBox.Show(error, "Error");
                 progressBar?.OutputText(error);
+                FileLogging.Append(error);
+
                 return;
             }
 
@@ -268,9 +283,12 @@ namespace NetboxBulkConnect
 
         private void RefreshEverything(Action<bool> onComplete)
         {
+            FileLogging.Append("Trying to refresh netbox data");
+
             if (string.IsNullOrEmpty(Config.GetConfig().Server) == true)
             {
                 MessageBox.Show("Server is missing", "Notice");
+                FileLogging.Append("Server is missing");
                 new SettingsForm(this).Show();
 
                 onComplete?.Invoke(false);
@@ -280,6 +298,7 @@ namespace NetboxBulkConnect
             if (string.IsNullOrEmpty(Config.GetConfig().ApiToken) == true)
             {
                 MessageBox.Show("ApiToken is missing", "Notice");
+                FileLogging.Append("ApiToken is missing");
                 new SettingsForm(this).Show();
 
                 onComplete?.Invoke(false);
@@ -310,6 +329,7 @@ namespace NetboxBulkConnect
             {
                 progressBar.SetCurrentProgress(0);
                 progressBar.SetText("Loading Rearports");
+                FileLogging.Append("Loading Rearports");
             }));
             RefreshPort(Port.Type.Rearport, progressBar);
 
@@ -318,6 +338,7 @@ namespace NetboxBulkConnect
             {
                 progressBar.SetCurrentProgress(25);
                 progressBar.SetText("Loading Frontports");
+                FileLogging.Append("Loading Frontports");
             }));
             RefreshPort(Port.Type.Frontport, progressBar);
 
@@ -326,6 +347,7 @@ namespace NetboxBulkConnect
             {
                 progressBar.SetCurrentProgress(50);
                 progressBar.SetText("Loading Interfaces");
+                FileLogging.Append("Loading Interfaces");
             }));
             RefreshPort(Port.Type.Interface, progressBar);
 
@@ -334,6 +356,7 @@ namespace NetboxBulkConnect
             {
                 progressBar.SetCurrentProgress(75);
                 progressBar.SetText("Loading Cable Types");
+                FileLogging.Append("Loading Cable Types");
             }));
             RefreshCableTypes(progressBar);
 
@@ -342,6 +365,7 @@ namespace NetboxBulkConnect
             {
                 progressBar.Dispose();
                 onComplete?.Invoke(true);
+                FileLogging.Append("Finished loading netbox data");
             }));
         }
 
@@ -379,12 +403,16 @@ namespace NetboxBulkConnect
             if (int.TryParse(textBox1.Text, out int portCount) == false)
             {
                 MessageBox.Show("Port count is not a whole number", "Error");
+                FileLogging.Append("Port count is not a whole number");
+
                 return;
             }
 
             if (int.TryParse(textBox3.Text, out int cableLength) == false)
             {
                 MessageBox.Show("Cable length is not a whole number", "Error");
+                FileLogging.Append("Cable length is not a whole number");
+
                 return;
             }
 
@@ -394,6 +422,8 @@ namespace NetboxBulkConnect
             if (deviceA.Key == deviceB.Key)
             {
                 MessageBox.Show("You can't connect the same device to itself", "Error");
+                FileLogging.Append("You can't connect the same device to itself");
+
                 return;
             }
 
@@ -443,12 +473,16 @@ namespace NetboxBulkConnect
                 if (deviceAIndex == -1 || deviceAIndex >= portsOfTypeA.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
+                    FileLogging.Append("Port count that you're trying to connect on Device A is going out of bounds");
+
                     return;
                 }
 
                 if (deviceBIndex == -1 || deviceBIndex >= portsOfTypeB.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
+                    FileLogging.Append("Port count that you're trying to connect on Device B is going out of bounds");
+
                     return;
                 }
 
@@ -556,6 +590,7 @@ namespace NetboxBulkConnect
             if (int.TryParse(textBox1.Text, out int portCount) == false)
             {
                 MessageBox.Show("Port count is not a whole number", "Error");
+                FileLogging.Append("Port count is not a whole number");
 
                 onComplete?.Invoke(false);
                 return;
@@ -564,6 +599,7 @@ namespace NetboxBulkConnect
             if (int.TryParse(textBox3.Text, out int cableLength) == false)
             {
                 MessageBox.Show("Cable length is not a whole number", "Error");
+                FileLogging.Append("Cable length is not a whole number");
 
                 onComplete?.Invoke(false);
                 return;
@@ -575,6 +611,7 @@ namespace NetboxBulkConnect
             if (deviceA.Key == deviceB.Key)
             {
                 MessageBox.Show("You can't connect the same device to itself", "Error");
+                FileLogging.Append("You can't connect the same device to itself");
 
                 onComplete?.Invoke(false);
                 return;
@@ -612,7 +649,10 @@ namespace NetboxBulkConnect
             }
 
             StringBuilder output = new StringBuilder();
-            output.AppendLine($"Trying to connect {portCount} ports from {deviceA.Key} to {deviceB.Key}...");
+
+            string progress = $"Trying to connect {portCount} ports from {deviceA.Key} to {deviceB.Key}...";
+            output.AppendLine(progress);
+            FileLogging.Append(progress);
 
             StringBuilder apiRequest = new StringBuilder();
             apiRequest.Append("[");
@@ -634,6 +674,7 @@ namespace NetboxBulkConnect
                 if (deviceAIndex == -1 || deviceAIndex >= portsOfTypeA.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
+                    FileLogging.Append("Port count that you're trying to connect on Device A is going out of bounds");
 
                     onComplete?.Invoke(false);
                     return;
@@ -642,6 +683,7 @@ namespace NetboxBulkConnect
                 if (deviceBIndex == -1 || deviceBIndex >= portsOfTypeB.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
+                    FileLogging.Append("Port count that you're trying to connect on Device B is going out of bounds");
 
                     onComplete?.Invoke(false);
                     return;
@@ -654,7 +696,10 @@ namespace NetboxBulkConnect
                 deviceBPortsToRemove.Add(deviceBPort);
 
                 apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cableType + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
-                output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}");
+
+                progress = $"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}";
+                output.AppendLine(progress);
+                FileLogging.Append(progress);
 
                 deviceAIndex += deviceAPortSkips + 1;
                 deviceBIndex += deviceBPortSkips + 1;
@@ -676,11 +721,15 @@ namespace NetboxBulkConnect
                     deviceB.Value.ports.Remove(port);
                 }
 
-                output.AppendLine($"All {portCount} ports connected succesfully!");
+                progress = $"All {portCount} ports connected succesfully!";
+                output.AppendLine(progress);
+                FileLogging.Append(progress);
             }
             else
             {
-                output.AppendLine($"Connecting ports failed with error code: {responseCode}");
+                progress = $"Connecting ports failed with error code: {responseCode}";
+                output.AppendLine(progress);
+                FileLogging.Append(progress);
             }
 
             textBox2.Text = output.ToString();
