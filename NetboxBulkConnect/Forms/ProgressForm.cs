@@ -37,7 +37,7 @@ namespace NetboxBulkConnect
         {
             Invoke(new Action(() =>
             {
-                textBox1.AppendText(text + "\r\n");
+                textBox1.AppendText($"{text}\r\n");
             }));
         }
     }

@@ -532,7 +532,7 @@ namespace NetboxBulkConnect
                 deviceBPortsToRemove.Add(deviceBPort);
 
                 apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cablesTypes[comboBox3.SelectedIndex].value.ToString() + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
-                output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}");
+                output.AppendLine($"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}\r\n");
 
                 deviceAIndex += deviceAPortSkips + 1;
                 deviceBIndex += deviceBPortSkips + 1;
