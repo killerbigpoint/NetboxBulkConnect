@@ -36,7 +36,7 @@ namespace NetboxBulkConnect
             RefreshEverything(OnRefreshDone);
         }
 
-        private void OnRefreshDone()
+        private void OnRefreshDone(bool success)
         {
             ChangeMetrics(Config.GetConfig().MetricsType);
             textBox1.Text = Config.GetConfig().NumberOfPorts.ToString();
@@ -52,7 +52,7 @@ namespace NetboxBulkConnect
             comboBox4.SelectedIndex = 0;
             comboBox7.SelectedIndex = 0;
 
-            UnlockUI();
+            UnlockUI(success);
         }
 
         private void LockUI()
@@ -74,7 +74,7 @@ namespace NetboxBulkConnect
             button4.Enabled = false;
         }
 
-        private void UnlockUI()
+        private void UnlockUI(bool success)
         {
             comboBox1.Enabled = true;
             comboBox2.Enabled = true;
@@ -255,12 +255,14 @@ namespace NetboxBulkConnect
             }
         }
 
-        private void RefreshEverything(Action onComplete)
+        private void RefreshEverything(Action<bool> onComplete)
         {
             if (string.IsNullOrEmpty(Config.GetConfig().Server) == true)
             {
                 MessageBox.Show("Server is missing", "Notice");
                 new SettingsForm(this).Show();
+
+                onComplete?.Invoke(false);
                 return;
             }
 
@@ -268,6 +270,8 @@ namespace NetboxBulkConnect
             {
                 MessageBox.Show("ApiToken is missing", "Notice");
                 new SettingsForm(this).Show();
+
+                onComplete?.Invoke(false);
                 return;
             }
 
@@ -288,7 +292,7 @@ namespace NetboxBulkConnect
             fetchThread.Start();
         }
 
-        private void RefreshEverythingInternal(Action onComplete, ProgressForm progressBar)
+        private void RefreshEverythingInternal(Action<bool> onComplete, ProgressForm progressBar)
         {
             //Refresh Rearports
             Invoke(new Action(() =>
@@ -326,7 +330,7 @@ namespace NetboxBulkConnect
             Invoke(new Action(() =>
             {
                 progressBar.Dispose();
-                onComplete?.Invoke();
+                onComplete?.Invoke(true);
             }));
         }
 
@@ -464,12 +468,6 @@ namespace NetboxBulkConnect
             currentSettingsMenu.Show();
         }
 
-        // ----- Import CSV Format ----- \\
-        private void button5_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Coming soon", "Beta");
-        }
-
         // ----- Cable Type ----- \\
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -528,15 +526,35 @@ namespace NetboxBulkConnect
         // ----- Connect Ports Button ----- \\
         private void button2_Click(object sender, EventArgs e)
         {
+            LockUI();
+            ConnectPorts(UnlockUI);
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DisplayDeviceAPorts(comboBox1.SelectedIndex);
+        }
+
+        private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DisplayDeviceBPorts(comboBox2.SelectedIndex);
+        }
+
+        private void ConnectPorts(Action<bool> onComplete)
+        {
             if (int.TryParse(textBox1.Text, out int portCount) == false)
             {
                 MessageBox.Show("Port count is not a whole number", "Error");
+
+                onComplete?.Invoke(false);
                 return;
             }
 
             if (int.TryParse(textBox3.Text, out int cableLength) == false)
             {
                 MessageBox.Show("Cable length is not a whole number", "Error");
+
+                onComplete?.Invoke(false);
                 return;
             }
 
@@ -546,6 +564,8 @@ namespace NetboxBulkConnect
             if (deviceA.Key == deviceB.Key)
             {
                 MessageBox.Show("You can't connect the same device to itself", "Error");
+
+                onComplete?.Invoke(false);
                 return;
             }
 
@@ -603,12 +623,16 @@ namespace NetboxBulkConnect
                 if (deviceAIndex >= portsOfTypeA.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
+
+                    onComplete?.Invoke(false);
                     return;
                 }
 
                 if (deviceBIndex >= portsOfTypeB.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
+
+                    onComplete?.Invoke(false);
                     return;
                 }
 
@@ -651,16 +675,8 @@ namespace NetboxBulkConnect
             textBox2.Text = output.ToString();
             DisplayDeviceAPorts(comboBox1.SelectedIndex);
             DisplayDeviceBPorts(comboBox2.SelectedIndex);
-        }
 
-        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            DisplayDeviceAPorts(comboBox1.SelectedIndex);
-        }
-
-        private void comboBox7_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            DisplayDeviceBPorts(comboBox2.SelectedIndex);
+            onComplete?.Invoke(true);
         }
     }
 }
