@@ -620,7 +620,7 @@ namespace NetboxBulkConnect
                     apiRequest.Append(",");
                 }
 
-                if (deviceAIndex >= portsOfTypeA.Count)
+                if (deviceAIndex == -1 || deviceAIndex >= portsOfTypeA.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device A is going out of bounds", "Error");
 
@@ -628,7 +628,7 @@ namespace NetboxBulkConnect
                     return;
                 }
 
-                if (deviceBIndex >= portsOfTypeB.Count)
+                if (deviceAIndex == -1 || deviceBIndex >= portsOfTypeB.Count)
                 {
                     MessageBox.Show("Port count that you're trying to connect on Device B is going out of bounds", "Error");
 
