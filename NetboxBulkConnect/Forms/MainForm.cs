@@ -67,6 +67,8 @@ namespace NetboxBulkConnect
 
             textBox1.Enabled = false;
             textBox3.Enabled = false;
+            textBox4.Enabled = false;
+            textBox5.Enabled = false;
 
             button1.Enabled = false;
             button2.Enabled = false;
@@ -86,6 +88,8 @@ namespace NetboxBulkConnect
 
             textBox1.Enabled = true;
             textBox3.Enabled = true;
+            textBox4.Enabled = true;
+            textBox5.Enabled = true;
 
             button1.Enabled = true;
             button2.Enabled = true;
@@ -107,6 +111,7 @@ namespace NetboxBulkConnect
 
                     MessageBox.Show(error, "Error");
                     progressBar?.OutputText(error);
+
                     return;
                 }
 
@@ -124,6 +129,7 @@ namespace NetboxBulkConnect
                 if (response.results == null)
                 {
                     MessageBox.Show("Failed getting unconnected ports", "Error");
+
                     progressBar?.OutputText("Failed getting unconnected ports");
                     return;
                 }
@@ -133,25 +139,27 @@ namespace NetboxBulkConnect
                     string deviceName = port.device.name;
                     bool isConnected = port.cable != null;
 
-                    if (isConnected == false)
+                    if (isConnected == true)
                     {
-                        if (devices.ContainsKey(deviceName) == false)
-                        {   
-                            Invoke(new Action(() =>
-                            {
-                                comboBox1.Items.Add(deviceName);
-                                comboBox2.Items.Add(deviceName);
-                            }));
-
-                            devices[deviceName] = new DeviceData()
-                            {
-                                id = port.device.id,
-                                ports = new List<Port>()
-                            };
-                        }
-
-                        devices[deviceName].ports.Add(new Port(port.id, port.name, portType));
+                        continue;
                     }
+
+                    if (devices.ContainsKey(deviceName) == false)
+                    {
+                        Invoke(new Action(() =>
+                        {
+                            comboBox1.Items.Add(deviceName);
+                            comboBox2.Items.Add(deviceName);
+                        }));
+
+                        devices[deviceName] = new DeviceData()
+                        {
+                            id = port.device.id,
+                            ports = new List<Port>()
+                        };
+                    }
+
+                    devices[deviceName].ports.Add(new Port(port.id, port.name, portType));
                 }
             }
 
