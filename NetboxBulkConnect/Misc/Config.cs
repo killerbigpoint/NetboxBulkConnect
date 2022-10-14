@@ -18,14 +18,14 @@ namespace NetboxBulkConnect.Misc
         public bool UseHttpEncryption = true; //Default to true because we have standards
 
         public Metrics.Type MetricsType = Metrics.Type.Meters; //EU > NA
-        public bool UseTooltips = true; //Because some people don't have a brain lmao
+        public bool UseTooltips = true; //Because some people just need it
 
         //Setting all of these can be tedious and takes time
         public int NumberOfPorts = 1;
         public int CableType = 0;
         public int CableLength = 20;
 
-        //Explaind how to use these in the tooltips
+        //Explanation on how these are used is available in the tooltips
         public int DeviceAPortSkips = 0;
         public int DeviceBPortSkips = 0;
 
