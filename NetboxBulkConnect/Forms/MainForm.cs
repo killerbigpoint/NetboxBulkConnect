@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System;
-using System.Diagnostics;
 
 namespace NetboxBulkConnect
 {
@@ -42,6 +41,7 @@ namespace NetboxBulkConnect
         {
             if (success == true)
             {
+                ChangeTooltipState(Config.GetConfig().UseTooltips);
                 ChangeMetrics(Config.GetConfig().MetricsType);
                 textBox1.Text = Config.GetConfig().NumberOfPorts.ToString();
                 textBox3.Text = Config.GetConfig().CableLength.ToString();
@@ -372,6 +372,11 @@ namespace NetboxBulkConnect
         public void ChangeMetrics(Metrics.Type type)
         {
             label5.Text = $"Cable Length ({type}):";
+        }
+
+        public void ChangeTooltipState(bool state)
+        {
+            toolTip1.Active = state;
         }
 
         // ---------- Combobox Callbacks ---------- \\

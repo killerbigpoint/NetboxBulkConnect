@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -57,22 +58,24 @@
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.textBox5 = new System.Windows.Forms.TextBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(164, 74);
+            this.comboBox1.Location = new System.Drawing.Point(139, 74);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(192, 24);
             this.comboBox1.TabIndex = 0;
+            this.toolTip1.SetToolTip(this.comboBox1, "First device to connect a port from");
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(88, 78);
+            this.label1.Location = new System.Drawing.Point(66, 78);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(65, 16);
@@ -82,7 +85,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(88, 111);
+            this.label2.Location = new System.Drawing.Point(399, 77);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(65, 16);
@@ -92,17 +95,18 @@
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(164, 107);
+            this.comboBox2.Location = new System.Drawing.Point(472, 74);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(192, 24);
             this.comboBox2.TabIndex = 2;
+            this.toolTip1.SetToolTip(this.comboBox2, "Second device to connect a port to");
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(45, 144);
+            this.label3.Location = new System.Drawing.Point(730, 77);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(106, 16);
@@ -111,28 +115,30 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(164, 140);
+            this.textBox1.Location = new System.Drawing.Point(844, 74);
             this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(192, 22);
             this.textBox1.TabIndex = 5;
             this.textBox1.Text = "1";
+            this.toolTip1.SetToolTip(this.textBox1, "The amount of ports that should be bulk connected together");
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // comboBox3
             // 
             this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(164, 172);
+            this.comboBox3.Location = new System.Drawing.Point(844, 103);
             this.comboBox3.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(192, 24);
             this.comboBox3.TabIndex = 6;
+            this.toolTip1.SetToolTip(this.comboBox3, "What cable type is being used in the bulk connect");
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(75, 176);
+            this.label4.Location = new System.Drawing.Point(755, 106);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(81, 16);
@@ -141,17 +147,19 @@
             // 
             // label5
             // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 209);
+            this.label5.Location = new System.Drawing.Point(695, 138);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(141, 16);
             this.label5.TabIndex = 8;
             this.label5.Text = "Cable Length (Meters):";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(12, 250);
+            this.textBox2.Location = new System.Drawing.Point(13, 250);
             this.textBox2.Margin = new System.Windows.Forms.Padding(4);
             this.textBox2.Multiline = true;
             this.textBox2.Name = "textBox2";
@@ -162,50 +170,54 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(891, 214);
+            this.button1.Location = new System.Drawing.Point(365, 214);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(144, 28);
             this.button1.TabIndex = 11;
             this.button1.Text = "Print CSV Format";
+            this.toolTip1.SetToolTip(this.button1, "Prints a CSV import of it so you can import it manually on the admin panel");
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(739, 214);
+            this.button2.Location = new System.Drawing.Point(187, 214);
             this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(144, 28);
             this.button2.TabIndex = 12;
             this.button2.Text = "Connect Ports";
+            this.toolTip1.SetToolTip(this.button2, "Starts connecting all the ports together");
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(740, 33);
+            this.button4.Location = new System.Drawing.Point(740, 214);
             this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(144, 28);
             this.button4.TabIndex = 14;
             this.button4.Text = "Refresh";
+            this.toolTip1.SetToolTip(this.button4, "Refreshes all information regarding the netbox");
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // comboBox5
             // 
             this.comboBox5.FormattingEnabled = true;
-            this.comboBox5.Location = new System.Drawing.Point(781, 74);
+            this.comboBox5.Location = new System.Drawing.Point(139, 139);
             this.comboBox5.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox5.Name = "comboBox5";
             this.comboBox5.Size = new System.Drawing.Size(192, 24);
             this.comboBox5.TabIndex = 15;
+            this.toolTip1.SetToolTip(this.comboBox5, "What port index to start bulk connecting from");
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(672, 78);
+            this.label6.Location = new System.Drawing.Point(36, 143);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(95, 16);
@@ -215,7 +227,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(672, 111);
+            this.label7.Location = new System.Drawing.Point(369, 143);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(95, 16);
@@ -225,37 +237,40 @@
             // comboBox6
             // 
             this.comboBox6.FormattingEnabled = true;
-            this.comboBox6.Location = new System.Drawing.Point(781, 108);
+            this.comboBox6.Location = new System.Drawing.Point(472, 140);
             this.comboBox6.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox6.Name = "comboBox6";
             this.comboBox6.Size = new System.Drawing.Size(192, 24);
             this.comboBox6.TabIndex = 18;
+            this.toolTip1.SetToolTip(this.comboBox6, "What port index to start bulk connecting from");
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(164, 206);
+            this.textBox3.Location = new System.Drawing.Point(844, 135);
             this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(192, 22);
             this.textBox3.TabIndex = 19;
             this.textBox3.Text = "20";
+            this.toolTip1.SetToolTip(this.textBox3, "The length of the cables that are being bulk connected");
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(892, 33);
+            this.button3.Location = new System.Drawing.Point(892, 214);
             this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(144, 28);
             this.button3.TabIndex = 20;
             this.button3.Text = "Settings";
+            this.toolTip1.SetToolTip(this.button3, "Grants you access to the settings where you can change several parameters");
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(8, 532);
+            this.label8.Location = new System.Drawing.Point(10, 529);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(199, 16);
@@ -265,27 +280,28 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(1004, 532);
+            this.label9.Location = new System.Drawing.Point(1005, 529);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(31, 16);
             this.label9.TabIndex = 23;
-            this.label9.Text = "v0.9";
+            this.label9.Text = "v1.0";
             // 
             // comboBox4
             // 
             this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(472, 74);
+            this.comboBox4.Location = new System.Drawing.Point(139, 106);
             this.comboBox4.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.Size = new System.Drawing.Size(192, 24);
             this.comboBox4.TabIndex = 24;
+            this.toolTip1.SetToolTip(this.comboBox4, "Type of port which the first device uses");
             this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(364, 78);
+            this.label10.Location = new System.Drawing.Point(31, 111);
             this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(100, 16);
@@ -305,27 +321,30 @@
             // comboBox7
             // 
             this.comboBox7.FormattingEnabled = true;
-            this.comboBox7.Location = new System.Drawing.Point(472, 107);
+            this.comboBox7.Location = new System.Drawing.Point(472, 108);
             this.comboBox7.Margin = new System.Windows.Forms.Padding(4);
             this.comboBox7.Name = "comboBox7";
             this.comboBox7.Size = new System.Drawing.Size(192, 24);
             this.comboBox7.TabIndex = 27;
+            this.toolTip1.SetToolTip(this.comboBox7, "Type of port which the second device uses");
             this.comboBox7.SelectedIndexChanged += new System.EventHandler(this.comboBox7_SelectedIndexChanged);
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(472, 141);
+            this.textBox4.Location = new System.Drawing.Point(139, 171);
             this.textBox4.Margin = new System.Windows.Forms.Padding(4);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(192, 22);
             this.textBox4.TabIndex = 28;
             this.textBox4.Text = "0";
+            this.toolTip1.SetToolTip(this.textBox4, "How many ports to skip in between next port (if set to 1, it will connect 1, 3, 5" +
+        ", etc...)");
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(364, 143);
+            this.label12.Location = new System.Drawing.Point(29, 174);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(102, 16);
@@ -335,7 +354,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(672, 141);
+            this.label13.Location = new System.Drawing.Point(362, 174);
             this.label13.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(102, 16);
@@ -344,19 +363,21 @@
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(781, 140);
+            this.textBox5.Location = new System.Drawing.Point(472, 171);
             this.textBox5.Margin = new System.Windows.Forms.Padding(4);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(192, 22);
             this.textBox5.TabIndex = 31;
             this.textBox5.Text = "0";
+            this.toolTip1.SetToolTip(this.textBox5, "How many ports to skip in between next port (if set to 1, it will connect 1, 3, 5" +
+        ", etc...)");
             this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1048, 554);
+            this.ClientSize = new System.Drawing.Size(1048, 551);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
@@ -392,7 +413,7 @@
             this.Name = "MainForm";
             this.Padding = new System.Windows.Forms.Padding(27, 74, 27, 25);
             this.Resizable = false;
-            this.Text = "Netbox Bulk Connect (Beta)";
+            this.Text = "Netbox Bulk Connect";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -429,6 +450,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
