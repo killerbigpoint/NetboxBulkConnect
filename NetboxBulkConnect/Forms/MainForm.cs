@@ -1,6 +1,5 @@
 ﻿using NetboxBulkConnect.Models;
 using NetboxBulkConnect.Misc;
-using MetroFramework.Forms;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -12,7 +11,7 @@ using System;
 
 namespace NetboxBulkConnect
 {
-    public partial class MainForm : MetroForm
+    public partial class MainForm : MetroFramework.Forms.MetroForm
     {
         // ----- API Information ----- \\
 
@@ -20,6 +19,8 @@ namespace NetboxBulkConnect
         private readonly List<CableTypeChoices> cablesTypes = new List<CableTypeChoices>();
 
         private SettingsForm currentSettingsMenu = null;
+
+        private bool initialized = false;
 
         public MainForm()
         {
@@ -39,6 +40,8 @@ namespace NetboxBulkConnect
 
         private void OnRefreshDone(bool success)
         {
+            FileLogging.Append($"Refresh Success -> {success}");
+
             if (success == true)
             {
                 ChangeTooltipState(Config.GetConfig().UseTooltips);
@@ -48,13 +51,19 @@ namespace NetboxBulkConnect
                 textBox4.Text = Config.GetConfig().DeviceAPortSkips.ToString();
                 textBox5.Text = Config.GetConfig().DeviceBPortSkips.ToString();
 
-                foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
+                if (initialized == false)
                 {
-                    comboBox4.Items.Add(type.ToString());
-                    comboBox7.Items.Add(type.ToString());
+                    foreach (Port.Type type in Enum.GetValues(typeof(Port.Type)))
+                    {
+                        comboBox4.Items.Add(type.ToString());
+                        comboBox7.Items.Add(type.ToString());
+                    }
+                    comboBox4.SelectedIndex = 0;
+                    comboBox7.SelectedIndex = 0;
+
+                    initialized = true;
+                    FileLogging.Append($"Initialized netbox data");
                 }
-                comboBox4.SelectedIndex = 0;
-                comboBox7.SelectedIndex = 0;
             }
 
             UnlockUI(success);
@@ -371,11 +380,15 @@ namespace NetboxBulkConnect
 
         public void ChangeMetrics(Metrics.Type type)
         {
+            FileLogging.Append($"Metric Used -> {type}");
+
             label5.Text = $"Cable Length ({type}):";
         }
 
         public void ChangeTooltipState(bool state)
         {
+            FileLogging.Append($"Tooltip State -> {state}");
+
             toolTip1.Active = state;
         }
 
@@ -384,12 +397,16 @@ namespace NetboxBulkConnect
         // ----- Device A ----- \\
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            FileLogging.Append("New device A selected");
+
             DisplayDeviceAPorts(comboBox1.SelectedIndex);
         }
 
         // ----- Device B ----- \\
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
+            FileLogging.Append("New device B selected");
+
             DisplayDeviceBPorts(comboBox2.SelectedIndex);
         }
 
@@ -398,8 +415,10 @@ namespace NetboxBulkConnect
         // ----- Refresh Button ----- \\
         private void button4_Click(object sender, EventArgs e)
         {
+            FileLogging.Append("Refresh requested");
+
             LockUI();
-            RefreshEverything(UnlockUI);
+            RefreshEverything(OnRefreshDone);
         }
 
         // ----- Print CSV Format ----- \\
@@ -576,6 +595,8 @@ namespace NetboxBulkConnect
         // ----- Connect Ports Button ----- \\
         private void button2_Click(object sender, EventArgs e)
         {
+            FileLogging.Append("Bulk requested");
+
             LockUI();
             ConnectPorts(UnlockUI);
         }
