@@ -68,7 +68,7 @@ namespace NetboxBulkConnect.Misc
             return response;
         }
 
-        public static HttpStatusCode PostRequest(string endpoint, string data)
+        public static HttpStatusCode PostRequest(string endpoint, string data, out string error)
         {
             byte[] postData = Encoding.UTF8.GetBytes(data);
 
@@ -87,11 +87,21 @@ namespace NetboxBulkConnect.Misc
             HttpStatusCode responseCode;
             try
             {
+                error = string.Empty;
                 responseCode = ((HttpWebResponse)request.GetResponse()).StatusCode;
+
             }
             catch (WebException ex)
             {
-                responseCode = ((HttpWebResponse)ex.Response).StatusCode;
+                HttpWebResponse response = ((HttpWebResponse)ex.Response);
+
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                {
+                    error = reader.ReadToEnd();
+                }
+
+                //error = response.StatusDescription;
+                responseCode = response.StatusCode;
             }
 
             return responseCode;

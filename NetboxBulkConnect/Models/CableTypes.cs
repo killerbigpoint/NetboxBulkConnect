@@ -136,10 +136,10 @@
         public bool required { get; set; }
         public bool read_only { get; set; }
         public string label { get; set; }
-        public Choice3[] choices { get; set; }
+        public CableChoices[] choices { get; set; }
     }
 
-    public class Choice3
+    public class CableChoices
     {
         public string value { get; set; }
         public string display_name { get; set; }

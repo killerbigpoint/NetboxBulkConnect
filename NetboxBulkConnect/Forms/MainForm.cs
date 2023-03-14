@@ -224,7 +224,6 @@ namespace NetboxBulkConnect
             Invoke(new Action(() =>
             {
                 comboBox3.Items.Clear();
-
                 foreach (CableTypeChoices type in response.actions.POST.type.choices)
                 {
                     cablesTypes.Add(type);
@@ -732,7 +731,10 @@ namespace NetboxBulkConnect
             }
 
             apiRequest.Append("]");
-            HttpStatusCode responseCode = RequestWrapper.PostRequest($"dcim/cables/", apiRequest.ToString());
+
+            output.AppendLine("Bozo -> " + apiRequest.ToString());
+
+            HttpStatusCode responseCode = RequestWrapper.PostRequest($"dcim/cables/", apiRequest.ToString(), out string error);
 
             if (responseCode == HttpStatusCode.OK ||
                 responseCode == HttpStatusCode.Created)
@@ -753,7 +755,7 @@ namespace NetboxBulkConnect
             }
             else
             {
-                progress = $"Connecting ports failed with error code: {responseCode}";
+                progress = $"Connecting ports failed with error code: {responseCode} ({error})";
                 output.AppendLine(progress);
                 FileLogging.Append(progress);
             }
