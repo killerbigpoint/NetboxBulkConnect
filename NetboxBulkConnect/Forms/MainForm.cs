@@ -720,7 +720,9 @@ namespace NetboxBulkConnect
                 deviceAPortsToRemove.Add(deviceAPort);
                 deviceBPortsToRemove.Add(deviceBPort);
 
-                apiRequest.Append("{\"termination_a_type\": \"" + deviceAPort.GetApiName() + "\", \"termination_a_id\": " + deviceAPort.id + ", \"termination_b_type\": \"" + deviceBPort.GetApiName() + "\", \"termination_b_id\": " + deviceBPort.id + ", \"type\": \"" + cableType + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
+                apiRequest.Append("{\"a_terminations\":  [    {      \"object_type\": \"" + deviceAPort.GetApiName() + "\",\r\n      \"object_id\": " + deviceAPort.id + "    }  ],");
+                apiRequest.Append("\"b_terminations\":  [    {      \"object_type\": \"" + deviceBPort.GetApiName() + "\",\r\n      \"object_id\": " + deviceBPort.id + "    }  ],");
+                apiRequest.Append("\"type\": \"" + cableType + "\", \"length_unit\": \"" + metricsType + "\", \"length\": " + cableLength + "}");
 
                 progress = $"{deviceA.Key}:{deviceAPort.name} --> {deviceB.Key}:{deviceBPort.name}";
                 output.AppendLine(progress);
@@ -731,8 +733,7 @@ namespace NetboxBulkConnect
             }
 
             apiRequest.Append("]");
-
-            output.AppendLine("Bozo -> " + apiRequest.ToString());
+            //output.AppendLine("API Request -> " + apiRequest.ToString());
 
             HttpStatusCode responseCode = RequestWrapper.PostRequest($"dcim/cables/", apiRequest.ToString(), out string error);
 
